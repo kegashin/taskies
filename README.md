@@ -1,0 +1,80 @@
+# Taskies
+
+Taskies is a small native macOS app for keeping tasks in sticky notes.
+
+It is inspired by Apple Stickies, but focused on simple todo lists.
+
+## Features
+
+- Sticky-note windows for desktop tasks.
+- Todo rows with checkboxes and inline editing.
+- Collapsible notes with editable titles.
+- Done section for completed tasks.
+- Classic Stickies-style colors.
+- Float on top and translucent window modes.
+- Text import and export.
+- Local persistence with SwiftData.
+
+## Requirements
+
+- macOS 14 or newer.
+- Xcode 15 or newer.
+
+## Build
+
+Open `Taskies.xcodeproj` in Xcode, choose the `Taskies` scheme, and run the app on
+`My Mac`.
+
+Command-line build:
+
+```bash
+xcodebuild -project Taskies.xcodeproj -scheme Taskies -configuration Debug build
+```
+
+## CI and Downloads
+
+GitHub Actions builds Taskies on every push to `main` and every pull request.
+The CI workflow uploads a short-lived unsigned `Taskies.dmg` artifact that can
+be downloaded from the workflow run page.
+
+Release tags create a GitHub Release with a downloadable DMG:
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+The release workflow uploads:
+
+- `Taskies.dmg`
+- `Taskies.dmg.sha256`
+
+Open the DMG and drag `Taskies.app` into Applications.
+
+These early DMGs are not Developer ID signed or notarized yet. macOS may warn
+when launching downloaded builds. Before a public non-App-Store release, Taskies
+should be signed with Developer ID and notarized.
+
+## Project Structure
+
+```text
+Taskies.xcodeproj
+Taskies/
+  App/          App entry point and application commands
+  App/Menus/    Custom macOS menu controllers
+  Model/        SwiftData models
+  Persistence/  Storage and text import/export
+  Note/         Sticky note UI and task interactions
+  Windowing/    AppKit windows, panels, geometry, and state
+  Support/      Shared utilities
+  Resources/    Asset catalogs and app resources
+```
+
+## Privacy
+
+Taskies stores notes locally on the device. It does not require an account and
+does not send task data to a server.
+
+## License
+
+Taskies is licensed under the Apache License 2.0. See `LICENSE`.

@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PROJECT: Taskies.xcodeproj
+  SCHEME: Taskies
+  DERIVED_DATA: ${{ runner.temp }}/TaskiesDerivedData
+  ARTIFACT_DIR: ${{ runner.temp }}/TaskiesArtifacts
+
+jobs:
+  build:
+    name: Build macOS app
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show Xcode environment
+        run: |
+          xcodebuild -version
+          xcodebuild -list -project "$PROJECT"
+
+      - name: Build release app
+        run: |
+          xcodebuild \
+            -project "$PROJECT" \
+            -scheme "$SCHEME" \
+            -configuration Release \
+            -derivedDataPath "$DERIVED_DATA" \
+            -destination 'platform=macOS' \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            build
+
+      - name: Package app DMG
+        run: |
+          mkdir -p "$ARTIFACT_DIR"
+          APP_PATH="$DERIVED_DATA/Build/Products/Release/Taskies.app"
+          DMG_PATH="$ARTIFACT_DIR/Taskies.dmg"
+
+          test -d "$APP_PATH"
+          hdiutil create \
+            -volname "Taskies" \
+            -srcfolder "$APP_PATH" \
+            -ov \
+            -format UDZO \
+            "$DMG_PATH"
+          shasum -a 256 "$DMG_PATH" > "$DMG_PATH.sha256"
+
+      - name: Upload downloadable app artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Taskies-dmg
+          path: |
+            ${{ env.ARTIFACT_DIR }}/Taskies.dmg
+            ${{ env.ARTIFACT_DIR }}/Taskies.dmg.sha256
+          if-no-files-found: error
+          retention-days: 14
