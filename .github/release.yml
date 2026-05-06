@@ -1,0 +1,24 @@
+changelog:
+  exclude:
+    labels:
+      - duplicate
+      - invalid
+      - question
+    authors:
+      - github-actions
+  categories:
+    - title: Added
+      labels:
+        - enhancement
+        - feature
+    - title: Fixed
+      labels:
+        - bug
+    - title: Maintenance
+      labels:
+        - maintenance
+        - documentation
+    - title: Other
+      labels:
+        - "*"
+

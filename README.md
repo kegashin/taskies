@@ -42,6 +42,18 @@ Command-line build:
 xcodebuild -project Taskies.xcodeproj -scheme Taskies -configuration Debug build
 ```
 
+Release build:
+
+```bash
+bash scripts/build-release.sh
+```
+
+Package a local DMG:
+
+```bash
+bash scripts/package-dmg.sh
+```
+
 ## CI
 
 GitHub Actions builds Taskies on every push to `main` and every pull request.
