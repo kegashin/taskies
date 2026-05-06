@@ -4,6 +4,8 @@ Taskies is a small native macOS app for keeping tasks in sticky notes.
 
 It is inspired by Apple Stickies, but focused on simple todo lists.
 
+Project page: https://taskies.kegashin.me
+
 ## Features
 
 - Sticky-note windows for desktop tasks.
