@@ -20,6 +20,17 @@ It is inspired by Apple Stickies, but focused on simple todo lists.
 - macOS 14 or newer.
 - Xcode 15 or newer.
 
+## Download
+
+Download the latest DMG from GitHub Releases:
+
+https://github.com/kegashin/taskies/releases
+
+Open the DMG and drag `Taskies.app` into Applications.
+
+Early GitHub builds are unsigned and not notarized yet. macOS may warn when
+opening downloaded builds.
+
 ## Build
 
 Open `Taskies.xcodeproj` in Xcode, choose the `Taskies` scheme, and run the app on
@@ -31,7 +42,7 @@ Command-line build:
 xcodebuild -project Taskies.xcodeproj -scheme Taskies -configuration Debug build
 ```
 
-## CI and Downloads
+## CI
 
 GitHub Actions builds Taskies on every push to `main` and every pull request.
 The CI workflow uploads a short-lived unsigned `Taskies.dmg` artifact that can
@@ -44,16 +55,22 @@ git tag v0.1.0
 git push origin v0.1.0
 ```
 
-The release workflow uploads:
+The release workflow creates a GitHub Release and uploads:
 
 - `Taskies.dmg`
 - `Taskies.dmg.sha256`
 
-Open the DMG and drag `Taskies.app` into Applications.
+## Release Checklist
 
-These early DMGs are not Developer ID signed or notarized yet. macOS may warn
-when launching downloaded builds. Before a public non-App-Store release, Taskies
-should be signed with Developer ID and notarized.
+- Confirm `MARKETING_VERSION` matches the release tag.
+- Run a local Debug build.
+- Test creating, editing, completing, archiving, and restoring tasks.
+- Test note colors, collapse, translucency, float-on-top, import, and export.
+- Push a version tag like `v0.1.0`.
+- Download the DMG from GitHub Releases and test it from Applications.
+
+Before a stable public release outside the Mac App Store, Taskies should use
+Developer ID signing and Apple notarization.
 
 ## Project Structure
 
