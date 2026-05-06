@@ -16,8 +16,6 @@ concurrency:
 env:
   PROJECT: Taskies.xcodeproj
   SCHEME: Taskies
-  DERIVED_DATA: ${{ runner.temp }}/TaskiesDerivedData
-  ARTIFACT_DIR: ${{ runner.temp }}/TaskiesArtifacts
 
 jobs:
   build:
@@ -35,6 +33,8 @@ jobs:
 
       - name: Build release app
         run: |
+          DERIVED_DATA="$RUNNER_TEMP/TaskiesDerivedData"
+
           xcodebuild \
             -project "$PROJECT" \
             -scheme "$SCHEME" \
@@ -47,6 +47,9 @@ jobs:
 
       - name: Package app DMG
         run: |
+          DERIVED_DATA="$RUNNER_TEMP/TaskiesDerivedData"
+          ARTIFACT_DIR="$RUNNER_TEMP/TaskiesArtifacts"
+
           mkdir -p "$ARTIFACT_DIR"
           APP_PATH="$DERIVED_DATA/Build/Products/Release/Taskies.app"
           DMG_PATH="$ARTIFACT_DIR/Taskies.dmg"
@@ -65,7 +68,7 @@ jobs:
         with:
           name: Taskies-dmg
           path: |
-            ${{ env.ARTIFACT_DIR }}/Taskies.dmg
-            ${{ env.ARTIFACT_DIR }}/Taskies.dmg.sha256
+            ${{ runner.temp }}/TaskiesArtifacts/Taskies.dmg
+            ${{ runner.temp }}/TaskiesArtifacts/Taskies.dmg.sha256
           if-no-files-found: error
           retention-days: 14
