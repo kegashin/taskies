@@ -1,6 +1,5 @@
 import AppKit
 import Observation
-import UniformTypeIdentifiers
 
 enum StickyArrangeMode {
     case title
@@ -37,15 +36,17 @@ final class StickyWindowCoordinator {
 
     var activeNoteId: UUID?
 
-    private var stickyWindows: [UUID: NSWindow] = [:]
-    private var stickyNotes: [UUID: StickyNote] = [:]
-    private var store: StickyStore?
-    private let windowDefaults = StickyWindowDefaults()
+    var stickyWindows: [UUID: NSWindow] = [:]
+    var stickyNotes: [UUID: StickyNote] = [:]
+    var store: StickyStore?
+    private var startupIssue: StickyStoreStartupIssue?
+    let windowDefaults = StickyWindowDefaults()
 
     private init() {}
 
-    func configure(store: StickyStore) {
+    func configure(store: StickyStore, startupIssue: StickyStoreStartupIssue? = nil) {
         self.store = store
+        self.startupIssue = startupIssue
     }
 
     func window(for noteId: UUID) -> NSWindow? {
@@ -159,116 +160,59 @@ final class StickyWindowCoordinator {
         for window in stickyWindows.values {
             window.orderOut(nil)
         }
+        activeNoteId = nil
     }
 
     func hideActiveSticky() {
-        activePanel?.orderOut(nil)
+        guard let panel = activePanel else { return }
+        let noteId = panel.stickyNote?.id
+        panel.orderOut(nil)
+        if activeNoteId == noteId {
+            activeNoteId = nil
+        }
     }
 
     func hideSticky(id: UUID) {
         stickyWindows[id]?.orderOut(nil)
+        if activeNoteId == id {
+            activeNoteId = nil
+        }
     }
 
     func showSticky(id: UUID) {
         stickyWindows[id]?.makeKeyAndOrderFront(nil)
     }
 
-    func importTextFile() {
-        guard let store else { return }
+    func presentStartupIssueIfNeeded() {
+        guard let startupIssue else { return }
+        self.startupIssue = nil
 
-        let panel = NSOpenPanel()
-        panel.title = "Import Text"
-        panel.allowedContentTypes = [.plainText, .text]
-        panel.allowsMultipleSelection = false
-        panel.canChooseDirectories = false
+        let alert = NSAlert()
+        alert.messageText = startupIssue.alertMessage
+        alert.informativeText = startupIssue.alertInformativeText
+        alert.alertStyle = .warning
 
-        guard panel.runModal() == .OK,
-              let url = panel.url else {
-            return
+        alert.addButton(withTitle: "Continue")
+        let openFolderResponse: NSApplication.ModalResponse?
+        if startupIssue.dataDirectory != nil {
+            alert.addButton(withTitle: "Open Data Folder")
+            openFolderResponse = .alertSecondButtonReturn
+        } else {
+            openFolderResponse = nil
         }
+        alert.addButton(withTitle: "Quit")
+        let quitResponse: NSApplication.ModalResponse = openFolderResponse == nil
+            ? .alertSecondButtonReturn
+            : .alertThirdButtonReturn
 
-        do {
-            let text = try String(contentsOf: url, encoding: .utf8)
-            let taskTexts = StickyTextDocument.taskTexts(from: text)
-            var importedNote: StickyNote?
+        let response = alert.runModal()
 
-            try store.transaction {
-                let note = store.insertNote { note in
-                    StickyWindowGeometry.placeNew(note, existingWindowCount: stickyWindows.count)
-                    windowDefaults.apply(to: note)
-                    note.title = url.deletingPathExtension().lastPathComponent
-                }
-
-                for (index, line) in taskTexts.enumerated() {
-                    let item = NoteItem(text: line, order: index)
-                    item.note = note
-                    note.items.append(item)
-                    store.context.insert(item)
-                }
-
-                note.touch()
-                importedNote = note
-            }
-
-            if let importedNote {
-                openWindow(for: importedNote)
-            }
-        } catch {
-            presentError(message: "Could not import text.", informativeText: error.localizedDescription)
+        if response == openFolderResponse,
+           let directory = startupIssue.dataDirectory {
+            NSWorkspace.shared.open(directory)
+        } else if response == quitResponse {
+            NSApp.terminate(nil)
         }
-    }
-
-    func exportActiveStickyText() {
-        guard let note = activePanel?.stickyNote else { return }
-
-        let panel = NSSavePanel()
-        panel.title = "Export Text"
-        panel.nameFieldStringValue = "\(note.displayTitle).txt"
-        panel.allowedContentTypes = [.plainText]
-
-        guard panel.runModal() == .OK,
-              let url = panel.url else {
-            return
-        }
-
-        do {
-            try StickyTextDocument.exportedText(for: note)
-                .write(to: url, atomically: true, encoding: .utf8)
-        } catch {
-            presentError(message: "Could not export text.", informativeText: error.localizedDescription)
-        }
-    }
-
-    func exportAllStickiesToNotes() {
-        let notes = stickyNotes.values.sorted { $0.createdAt < $1.createdAt }
-        guard !notes.isEmpty else { return }
-
-        let panel = NSSavePanel()
-        panel.title = "Export All to Notes"
-        panel.nameFieldStringValue = "Taskies Notes.txt"
-        panel.allowedContentTypes = [.plainText]
-
-        guard panel.runModal() == .OK,
-              let url = panel.url else {
-            return
-        }
-
-        let text = notes
-            .map { StickyTextDocument.exportedText(for: $0) }
-            .joined(separator: "\n\n---\n\n")
-
-        do {
-            try text.write(to: url, atomically: true, encoding: .utf8)
-        } catch {
-            presentError(message: "Could not export notes.", informativeText: error.localizedDescription)
-        }
-    }
-
-    func printActiveSticky() {
-        guard let contentView = activePanel?.contentView else { return }
-
-        let operation = NSPrintOperation(view: contentView)
-        operation.run()
     }
 
     func activateSticky(id: UUID) {
@@ -277,84 +221,8 @@ final class StickyWindowCoordinator {
 
     func deactivateSticky(id: UUID) {
         guard activeNoteId == id else { return }
+        if stickyWindows[id]?.isVisible == true { return }
         activeNoteId = nil
-    }
-
-    func requestDeleteActiveSticky() {
-        guard let panel = activePanel,
-              let note = panel.stickyNote else {
-            return
-        }
-
-        requestDelete(note: note)
-    }
-
-    func promptRenameActiveSticky() {
-        guard let note = activePanel?.stickyNote else { return }
-        promptRenameSticky(id: note.id)
-    }
-
-    func promptRenameSticky(id: UUID) {
-        guard let note = stickyNotes[id] else { return }
-
-        stickyWindows[id]?.makeKeyAndOrderFront(nil)
-
-        let alert = NSAlert()
-        alert.messageText = "Rename Note"
-        alert.informativeText = "Set the title shown when this note is collapsed."
-        alert.addButton(withTitle: "Rename")
-        alert.addButton(withTitle: "Cancel")
-
-        let field = NSTextField(frame: NSRect(x: 0, y: 0, width: 260, height: 24))
-        field.stringValue = note.title == "New Note" ? "" : note.title
-        field.placeholderString = "New Note"
-        alert.accessoryView = field
-        alert.window.initialFirstResponder = field
-
-        guard alert.runModal() == .alertFirstButtonReturn else { return }
-
-        let title = field.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
-        note.title = title.isEmpty ? "New Note" : title
-        note.touch()
-        store?.saveIgnoringErrors("Failed to rename sticky note")
-    }
-
-    func requestDelete(note: StickyNote) {
-        let alert = NSAlert()
-        alert.messageText = "Delete Note?"
-        alert.informativeText = "Delete \"\(note.title.isEmpty ? "New Note" : note.title)\" and all tasks?"
-        alert.alertStyle = .warning
-        alert.addButton(withTitle: "Delete")
-        alert.addButton(withTitle: "Cancel")
-
-        if alert.runModal() == .alertFirstButtonReturn {
-            deleteSticky(id: note.id)
-        }
-    }
-
-    func deleteSticky(id: UUID) {
-        guard let store else { return }
-
-        closeSticky(id: id)
-
-        do {
-            try store.deleteNote(id: id)
-        } catch {
-            StickyLog.windowing.error("Failed to delete sticky: \(error.localizedDescription, privacy: .public)")
-        }
-    }
-
-    func setColorForActiveSticky(_ color: StickyColor) {
-        guard let note = activePanel?.stickyNote else { return }
-
-        note.color = color
-        note.touch()
-        store?.saveIgnoringErrors("Failed to save sticky color")
-    }
-
-    func toggleCollapseForActiveSticky() {
-        guard let note = activePanel?.stickyNote else { return }
-        toggleCollapse(for: note.id)
     }
 
     func minimizeActiveSticky() {
@@ -379,63 +247,6 @@ final class StickyWindowCoordinator {
         window.center()
     }
 
-    func useActiveStickyAsDefault() {
-        guard let panel = activePanel,
-              let note = panel.stickyNote else {
-            return
-        }
-
-        windowDefaults.save(from: note, windowFrame: panel.frame)
-    }
-
-    func arrangeStickies(by mode: StickyArrangeMode) {
-        let notes = sortedNotes(for: mode)
-        let visibleFrame = NSScreen.main?.visibleFrame ?? NSRect(x: 0, y: 0, width: 900, height: 700)
-
-        for (index, note) in notes.enumerated() {
-            guard let window = stickyWindows[note.id] else { continue }
-
-            let offset = CGFloat((index % 10) * 24)
-            let width = window.frame.width
-            let height = window.frame.height
-            let origin = NSPoint(
-                x: visibleFrame.minX + 56 + offset,
-                y: visibleFrame.maxY - height - 56 - offset
-            )
-
-            window.setFrame(
-                NSRect(origin: origin, size: NSSize(width: width, height: height)),
-                display: true,
-                animate: true
-            )
-            window.orderFront(nil)
-        }
-    }
-
-    func togglePinnedForActiveSticky() {
-        guard let panel = activePanel,
-              let note = panel.stickyNote else {
-            return
-        }
-
-        note.isPinned.toggle()
-        note.touch()
-        StickyWindowGeometry.applyState(to: panel, from: note)
-        store?.saveIgnoringErrors("Failed to save pinned state")
-    }
-
-    func toggleTranslucentForActiveSticky() {
-        guard let panel = activePanel,
-              let note = panel.stickyNote else {
-            return
-        }
-
-        note.isTranslucent.toggle()
-        note.touch()
-        StickyWindowGeometry.applyState(to: panel, from: note)
-        store?.saveIgnoringErrors("Failed to save translucent state")
-    }
-
     func toggleCollapse(for noteId: UUID) {
         guard let note = stickyNotes[noteId] else { return }
 
@@ -450,11 +261,21 @@ final class StickyWindowCoordinator {
         stickyWindows[noteId]?.zoom(nil)
     }
 
-    private var activePanel: StickyPanel? {
-        NSApp.keyWindow as? StickyPanel
+    var activePanel: StickyPanel? {
+        if let keyPanel = NSApp.keyWindow as? StickyPanel {
+            return keyPanel
+        }
+
+        guard let activeNoteId,
+              let panel = stickyWindows[activeNoteId] as? StickyPanel,
+              panel.isVisible else {
+            return nil
+        }
+
+        return panel
     }
 
-    private func presentError(message: String, informativeText: String) {
+    func presentError(message: String, informativeText: String) {
         let alert = NSAlert()
         alert.messageText = message
         alert.informativeText = informativeText
@@ -462,26 +283,11 @@ final class StickyWindowCoordinator {
         alert.runModal()
     }
 
-    private func sortedNotes(for mode: StickyArrangeMode) -> [StickyNote] {
-        switch mode {
-        case .title:
-            return stickyNotes.values.sorted {
-                $0.displayTitle.localizedCaseInsensitiveCompare($1.displayTitle) == .orderedAscending
-            }
-        case .color:
-            return stickyNotes.values.sorted {
-                if $0.color.rawValue == $1.color.rawValue {
-                    return $0.createdAt < $1.createdAt
-                }
-                return $0.color.rawValue < $1.color.rawValue
-            }
-        case .createdAt:
-            return stickyNotes.values.sorted { $0.createdAt < $1.createdAt }
-        }
-    }
-
-    private func closeSticky(id: UUID) {
+    func closeSticky(id: UUID, savesFrameOnClose: Bool = true) {
         if let window = stickyWindows[id] {
+            if let panel = window as? StickyPanel {
+                panel.windowDelegate?.savesFrameOnClose = savesFrameOnClose
+            }
             window.close()
             stickyWindows.removeValue(forKey: id)
             stickyNotes.removeValue(forKey: id)

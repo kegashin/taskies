@@ -31,6 +31,9 @@ jobs:
           xcodebuild -version
           xcodebuild -list -project "$PROJECT"
 
+      - name: Run tests
+        run: bash scripts/test.sh
+
       - name: Build release app
         run: bash scripts/build-release.sh
 

@@ -20,9 +20,12 @@
 			A100000AC /* StickyWindowLegacyNormalizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000002E /* StickyWindowLegacyNormalizer.swift */; };
 			A10000004 /* StickyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000014 /* StickyStore.swift */; };
 			A10000005 /* StickyNote.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000015 /* StickyNote.swift */; };
-			A10000006 /* NoteItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000016 /* NoteItem.swift */; };
-			A10000007 /* StickyWindowCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000017 /* StickyWindowCoordinator.swift */; };
-			A10000008 /* StickyWindowFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000018 /* StickyWindowFactory.swift */; };
+				A10000006 /* NoteItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000016 /* NoteItem.swift */; };
+				A10000007 /* StickyWindowCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000017 /* StickyWindowCoordinator.swift */; };
+				A10000120 /* StickyWindowCoordinator+ImportExport.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000110 /* StickyWindowCoordinator+ImportExport.swift */; };
+				A10000121 /* StickyWindowCoordinator+NoteActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000111 /* StickyWindowCoordinator+NoteActions.swift */; };
+				A10000122 /* StickyWindowCoordinator+Arrangement.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000112 /* StickyWindowCoordinator+Arrangement.swift */; };
+				A10000008 /* StickyWindowFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000018 /* StickyWindowFactory.swift */; };
 			A10000009 /* StickyWindowDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000019 /* StickyWindowDelegate.swift */; };
 			A1000000A /* StickyWindowGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001A /* StickyWindowGeometry.swift */; };
 			A1000000B /* StickyPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001B /* StickyPanel.swift */; };
@@ -35,7 +38,18 @@
 			A100000A2 /* DoneSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000023 /* DoneSectionView.swift */; };
 			A100000A3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A10000024 /* Assets.xcassets */; };
 			A100000A4 /* PlainTaskTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000026 /* PlainTaskTextField.swift */; };
+			A10000101 /* TaskiesModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000100 /* TaskiesModelTests.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A10000103 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A10000060 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A10000040;
+			remoteInfo = Taskies;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 			A10000010 /* Taskies.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Taskies.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -53,9 +67,12 @@
 			A1000002F /* AppIcon.svg */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = AppIcon.svg; sourceTree = "<group>"; };
 			A10000014 /* StickyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickyStore.swift; sourceTree = "<group>"; };
 			A10000015 /* StickyNote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickyNote.swift; sourceTree = "<group>"; };
-			A10000016 /* NoteItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteItem.swift; sourceTree = "<group>"; };
-			A10000017 /* StickyWindowCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickyWindowCoordinator.swift; sourceTree = "<group>"; };
-			A10000018 /* StickyWindowFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickyWindowFactory.swift; sourceTree = "<group>"; };
+				A10000016 /* NoteItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteItem.swift; sourceTree = "<group>"; };
+				A10000017 /* StickyWindowCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickyWindowCoordinator.swift; sourceTree = "<group>"; };
+				A10000110 /* StickyWindowCoordinator+ImportExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StickyWindowCoordinator+ImportExport.swift"; sourceTree = "<group>"; };
+				A10000111 /* StickyWindowCoordinator+NoteActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StickyWindowCoordinator+NoteActions.swift"; sourceTree = "<group>"; };
+				A10000112 /* StickyWindowCoordinator+Arrangement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StickyWindowCoordinator+Arrangement.swift"; sourceTree = "<group>"; };
+				A10000018 /* StickyWindowFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickyWindowFactory.swift; sourceTree = "<group>"; };
 			A10000019 /* StickyWindowDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickyWindowDelegate.swift; sourceTree = "<group>"; };
 			A1000001A /* StickyWindowGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickyWindowGeometry.swift; sourceTree = "<group>"; };
 			A1000001B /* StickyPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickyPanel.swift; sourceTree = "<group>"; };
@@ -69,10 +86,19 @@
 			A10000024 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 			A10000025 /* Taskies.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Taskies.entitlements; sourceTree = "<group>"; };
 			A10000026 /* PlainTaskTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlainTaskTextField.swift; sourceTree = "<group>"; };
+			A10000100 /* TaskiesModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskiesModelTests.swift; sourceTree = "<group>"; };
+			A10000102 /* TaskiesTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TaskiesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		A10000020 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A10000104 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -86,6 +112,7 @@
 			isa = PBXGroup;
 			children = (
 				A10000031 /* Taskies */,
+				A10000108 /* TaskiesTests */,
 				A10000032 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -109,6 +136,7 @@
 			isa = PBXGroup;
 			children = (
 				A10000010 /* Taskies.app */,
+				A10000102 /* TaskiesTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -155,9 +183,12 @@
 			};
 			A10000037 /* Windowing */ = {
 				isa = PBXGroup;
-				children = (
-					A10000017 /* StickyWindowCoordinator.swift */,
-					A10000018 /* StickyWindowFactory.swift */,
+					children = (
+						A10000017 /* StickyWindowCoordinator.swift */,
+						A10000110 /* StickyWindowCoordinator+ImportExport.swift */,
+						A10000111 /* StickyWindowCoordinator+NoteActions.swift */,
+						A10000112 /* StickyWindowCoordinator+Arrangement.swift */,
+						A10000018 /* StickyWindowFactory.swift */,
 					A10000019 /* StickyWindowDelegate.swift */,
 					A1000001A /* StickyWindowGeometry.swift */,
 					A1000001B /* StickyPanel.swift */,
@@ -209,12 +240,20 @@
 			};
 			A1000003C /* Styling */ = {
 				isa = PBXGroup;
-				children = (
-					A1000001E /* StickyAppearance.swift */,
-				);
-				path = Styling;
-				sourceTree = "<group>";
-			};
+			children = (
+				A1000001E /* StickyAppearance.swift */,
+			);
+			path = Styling;
+			sourceTree = "<group>";
+		};
+		A10000108 /* TaskiesTests */ = {
+			isa = PBXGroup;
+			children = (
+				A10000100 /* TaskiesModelTests.swift */,
+			);
+			path = TaskiesTests;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -235,6 +274,24 @@
 			productReference = A10000010 /* Taskies.app */;
 			productType = "com.apple.product-type.application";
 		};
+		A10000109 /* TaskiesTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A1000010C /* Build configuration list for PBXNativeTarget "TaskiesTests" */;
+			buildPhases = (
+				A10000106 /* Sources */,
+				A10000104 /* Frameworks */,
+				A10000105 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A10000107 /* PBXTargetDependency */,
+			);
+			name = TaskiesTests;
+			productName = TaskiesTests;
+			productReference = A10000102 /* TaskiesTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -247,6 +304,10 @@
 				TargetAttributes = {
 					A10000040 = {
 						CreatedOnToolsVersion = 15.0;
+					};
+					A10000109 = {
+						CreatedOnToolsVersion = 15.0;
+						TestTargetID = A10000040;
 					};
 				};
 			};
@@ -264,6 +325,7 @@
 			projectRoot = "";
 			targets = (
 				A10000040 /* Taskies */,
+				A10000109 /* TaskiesTests */,
 			);
 		};
 /* End PBXProject section */
@@ -277,6 +339,13 @@
 				);
 				runOnlyForDeploymentPostprocessing = 0;
 			};
+		A10000105 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -294,10 +363,13 @@
 					A100000A9 /* StickyTextDocument.swift in Sources */,
 					A100000AB /* StickyLog.swift in Sources */,
 					A10000004 /* StickyStore.swift in Sources */,
-					A10000005 /* StickyNote.swift in Sources */,
-					A10000006 /* NoteItem.swift in Sources */,
-					A10000007 /* StickyWindowCoordinator.swift in Sources */,
-					A10000008 /* StickyWindowFactory.swift in Sources */,
+						A10000005 /* StickyNote.swift in Sources */,
+						A10000006 /* NoteItem.swift in Sources */,
+						A10000007 /* StickyWindowCoordinator.swift in Sources */,
+						A10000120 /* StickyWindowCoordinator+ImportExport.swift in Sources */,
+						A10000121 /* StickyWindowCoordinator+NoteActions.swift in Sources */,
+						A10000122 /* StickyWindowCoordinator+Arrangement.swift in Sources */,
+						A10000008 /* StickyWindowFactory.swift in Sources */,
 					A10000009 /* StickyWindowDelegate.swift in Sources */,
 					A1000000A /* StickyWindowGeometry.swift in Sources */,
 					A1000000B /* StickyPanel.swift in Sources */,
@@ -311,10 +383,26 @@
 					A100000A0 /* TaskRowView.swift in Sources */,
 					A100000A1 /* NewTaskRowView.swift in Sources */,
 					A100000A2 /* DoneSectionView.swift in Sources */,
-				);
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A10000106 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000101 /* TaskiesModelTests.swift in Sources */,
+			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A10000107 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A10000040 /* Taskies */;
+			targetProxy = A10000103 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		A10000070 /* Debug */ = {
@@ -469,6 +557,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
@@ -478,10 +567,51 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 0.1.0;
+				OTHER_CODE_SIGN_FLAGS = "--timestamp";
 				PRODUCT_BUNDLE_IDENTIFIER = me.kegashin.taskies;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		A1000010A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = me.kegashin.taskies.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Taskies.app/Contents/MacOS/Taskies";
+			};
+			name = Debug;
+		};
+		A1000010B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = me.kegashin.taskies.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Taskies.app/Contents/MacOS/Taskies";
 			};
 			name = Release;
 		};
@@ -502,6 +632,15 @@
 			buildConfigurations = (
 				A10000070 /* Debug */,
 				A10000071 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A1000010C /* Build configuration list for PBXNativeTarget "TaskiesTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1000010A /* Debug */,
+				A1000010B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

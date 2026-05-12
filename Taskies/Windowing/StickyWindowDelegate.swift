@@ -8,6 +8,7 @@ final class StickyWindowDelegate: NSObject, NSWindowDelegate {
     let onBecomeKey: (UUID) -> Void
     let onResignKey: (UUID) -> Void
     var isAnimating = false
+    var savesFrameOnClose = true
 
     private var pendingSaveTask: Task<Void, Never>?
     private var pendingFrame: NSRect?
@@ -44,7 +45,9 @@ final class StickyWindowDelegate: NSObject, NSWindowDelegate {
         pendingSaveTask?.cancel()
         pendingSaveTask = nil
         pendingFrame = nil
-        saveWindowFrame(notification, immediately: true)
+        if savesFrameOnClose {
+            saveWindowFrame(notification, immediately: true)
+        }
         onClose(stickyNote.id)
     }
 

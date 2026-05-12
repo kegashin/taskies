@@ -26,11 +26,62 @@ jobs:
           xcodebuild -version
           xcodebuild -list -project "$PROJECT"
 
+      - name: Run tests
+        run: bash scripts/test.sh
+
+      - name: Prepare Developer ID signing
+        id: signing
+        env:
+          DEVELOPER_ID_APPLICATION_CERTIFICATE_BASE64: ${{ secrets.DEVELOPER_ID_APPLICATION_CERTIFICATE_BASE64 }}
+          DEVELOPER_ID_APPLICATION_CERTIFICATE_PASSWORD: ${{ secrets.DEVELOPER_ID_APPLICATION_CERTIFICATE_PASSWORD }}
+          DEVELOPER_ID_APPLICATION: ${{ secrets.DEVELOPER_ID_APPLICATION }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          if [[ -z "$DEVELOPER_ID_APPLICATION_CERTIFICATE_BASE64" \
+            || -z "$DEVELOPER_ID_APPLICATION_CERTIFICATE_PASSWORD" \
+            || -z "$DEVELOPER_ID_APPLICATION" \
+            || -z "$APPLE_TEAM_ID" ]]; then
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "Developer ID signing secrets are not configured; building unsigned prerelease DMG."
+            exit 0
+          fi
+
+          bash scripts/import-codesign-certificate.sh
+          echo "enabled=true" >> "$GITHUB_OUTPUT"
+
       - name: Build release app
-        run: bash scripts/build-release.sh
+        env:
+          DEVELOPER_ID_APPLICATION: ${{ secrets.DEVELOPER_ID_APPLICATION }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          SIGNING_ENABLED: ${{ steps.signing.outputs.enabled }}
+        run: |
+          if [[ "$SIGNING_ENABLED" == "true" ]]; then
+            CODE_SIGNING_ALLOWED=YES \
+            CODE_SIGNING_REQUIRED=YES \
+            CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY="$DEVELOPER_ID_APPLICATION" \
+            DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
+            bash scripts/build-release.sh
+          else
+            bash scripts/build-release.sh
+          fi
 
       - name: Package app DMG
         run: bash scripts/package-dmg.sh
+
+      - name: Notarize signed DMG
+        env:
+          SIGNING_ENABLED: ${{ steps.signing.outputs.enabled }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+        run: |
+          if [[ "$SIGNING_ENABLED" != "true" ]]; then
+            echo "Skipping notarization for unsigned prerelease DMG."
+            exit 0
+          fi
+
+          bash scripts/notarize-dmg.sh
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v4

@@ -7,6 +7,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let menuRepairMinimumInterval: TimeInterval = 0.5
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        guard !isRunningTests else { return }
+
         scheduleMenuRepair()
 
         Task { @MainActor in
@@ -14,14 +16,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             self.installApplicationMenus()
             await Task.yield()
             StickyWindowCoordinator.shared.restoreAllWindows()
+            StickyWindowCoordinator.shared.presentStartupIssueIfNeeded()
         }
     }
 
     func applicationDidBecomeActive(_ notification: Notification) {
+        guard !isRunningTests else { return }
         scheduleMenuRepair()
     }
 
     func applicationDidUpdate(_ notification: Notification) {
+        guard !isRunningTests else { return }
         scheduleMenuRepair()
     }
 
@@ -30,6 +35,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        guard !isRunningTests else { return true }
+
         if !flag {
             StickyWindowCoordinator.shared.showAllStickies()
         }
@@ -57,5 +64,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         StickyFontMenuController.shared.install()
         StickyColorMenuController.shared.install()
         lastMenuRepairAt = Date()
+    }
+
+    private var isRunningTests: Bool {
+        ProcessInfo.processInfo.environment["TASKIES_TESTING"] == "1"
     }
 }

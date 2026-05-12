@@ -1,5 +1,26 @@
-import SwiftData
 import Foundation
+import AppKit
+import Darwin
+import SwiftData
+
+struct StickyStoreStartupIssue {
+    let errorDescription: String
+    let dataDirectory: URL?
+
+    var alertMessage: String {
+        "Taskies could not open saved notes."
+    }
+
+    var alertInformativeText: String {
+        """
+        Taskies opened with temporary empty notes. Your existing data was left untouched.
+
+        Error: \(errorDescription)
+
+        Quit Taskies, back up the data folder, then reset app data manually if you want to start fresh.
+        """
+    }
+}
 
 @MainActor
 final class StickyStore {
@@ -13,8 +34,47 @@ final class StickyStore {
         self.container = container
     }
 
-    static func production() -> StickyStore {
-        StickyStore(container: makeModelContainer())
+    static func production() throws -> StickyStore {
+        try StickyStore(container: makeModelContainer(isStoredInMemoryOnly: false))
+    }
+
+    static func inMemory() throws -> StickyStore {
+        try StickyStore(container: makeModelContainer(isStoredInMemoryOnly: true))
+    }
+
+    static func testing() -> StickyStore {
+        do {
+            return try inMemory()
+        } catch {
+            StickyLog.store.fault("Could not create test ModelContainer: \(error.localizedDescription, privacy: .public)")
+            terminateAfterUnrecoverableStartupError(
+                productionError: "Taskies is running tests.",
+                recoveryError: error.localizedDescription
+            )
+        }
+    }
+
+    static func productionWithRecovery() -> (store: StickyStore, startupIssue: StickyStoreStartupIssue?) {
+        do {
+            return (try production(), nil)
+        } catch {
+            StickyLog.store.fault("Could not create production ModelContainer: \(error.localizedDescription, privacy: .public)")
+
+            let issue = StickyStoreStartupIssue(
+                errorDescription: error.localizedDescription,
+                dataDirectory: persistentStoreDirectory()
+            )
+
+            do {
+                return (try inMemory(), issue)
+            } catch {
+                StickyLog.store.fault("Could not create in-memory ModelContainer: \(error.localizedDescription, privacy: .public)")
+                terminateAfterUnrecoverableStartupError(
+                    productionError: issue.errorDescription,
+                    recoveryError: error.localizedDescription
+                )
+            }
+        }
     }
 
     func insertNote(configure: (StickyNote) -> Void = { _ in }) -> StickyNote {
@@ -68,17 +128,42 @@ final class StickyStore {
         }
     }
 
-    private static func makeModelContainer() -> ModelContainer {
+    private static func makeModelContainer(isStoredInMemoryOnly: Bool) throws -> ModelContainer {
+        let schema = Schema([
+            StickyNote.self,
+            NoteItem.self
+        ])
+        let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: isStoredInMemoryOnly)
+
+        return try ModelContainer(for: schema, configurations: [configuration])
+    }
+
+    private static func persistentStoreDirectory() -> URL? {
         let schema = Schema([
             StickyNote.self,
             NoteItem.self
         ])
         let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+        return configuration.url.deletingLastPathComponent()
+    }
 
-        do {
-            return try ModelContainer(for: schema, configurations: [configuration])
-        } catch {
-            fatalError("Could not create ModelContainer: \(error)")
-        }
+    private static func terminateAfterUnrecoverableStartupError(
+        productionError: String,
+        recoveryError: String
+    ) -> Never {
+        let alert = NSAlert()
+        alert.messageText = "Taskies could not start."
+        alert.informativeText = """
+        Taskies could not open saved notes or create a temporary recovery store.
+
+        Saved notes error: \(productionError)
+
+        Recovery error: \(recoveryError)
+        """
+        alert.alertStyle = .critical
+        alert.addButton(withTitle: "Quit")
+        alert.runModal()
+
+        exit(EXIT_FAILURE)
     }
 }

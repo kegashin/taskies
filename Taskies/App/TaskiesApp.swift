@@ -8,9 +8,18 @@ struct TaskiesApp: App {
     private let store: StickyStore
 
     init() {
-        let store = StickyStore.production()
+        let recoveredStore: (store: StickyStore, startupIssue: StickyStoreStartupIssue?)
+        if Self.isRunningTests {
+            recoveredStore = (store: StickyStore.testing(), startupIssue: nil)
+        } else {
+            recoveredStore = StickyStore.productionWithRecovery()
+        }
+        let store = recoveredStore.store
         self.store = store
-        StickyWindowCoordinator.shared.configure(store: store)
+        StickyWindowCoordinator.shared.configure(
+            store: store,
+            startupIssue: recoveredStore.startupIssue
+        )
     }
 
     var body: some Scene {
@@ -21,5 +30,9 @@ struct TaskiesApp: App {
         .commands {
             TaskiesCommands()
         }
+    }
+
+    private static var isRunningTests: Bool {
+        ProcessInfo.processInfo.environment["TASKIES_TESTING"] == "1"
     }
 }
