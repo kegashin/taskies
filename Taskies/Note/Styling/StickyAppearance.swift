@@ -15,9 +15,14 @@ enum StickyMetrics {
     static let defaultWindowSize = CGSize(width: 280, height: 236)
     static let minWindowSize = CGSize(width: 210, height: 122)
     static let minCollapsedWidth: CGFloat = 180
-    static let rowHPadding: CGFloat = 10
-    static let rowMinHeight: CGFloat = 22
-    static let taskFontSize: CGFloat = 13.2
+    static let rowHPadding: CGFloat = 11
+    static let rowVPadding: CGFloat = 3.5
+    static let rowMinHeight: CGFloat = 27
+    static let rowHighlightInset: CGFloat = 5
+    static let rowGlyphSize: CGFloat = 18
+    static let rowGlyphSpacing: CGFloat = 8
+    static let checkboxSize: CGFloat = 15
+    static let taskFontSize: CGFloat = 13
 }
 
 extension StickyColor {
@@ -120,7 +125,10 @@ struct StickyNoteBodyBackground: View {
             color.palette.paperTop
 
             VStack(spacing: 0) {
-                Color.white.opacity(0.10)
+                Color.black.opacity(0.07)
+                    .frame(height: 1)
+
+                Color.white.opacity(0.16)
                     .frame(height: 1)
 
                 Spacer(minLength: 0)

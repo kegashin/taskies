@@ -27,7 +27,7 @@ struct StickyNoteView: View {
                         StickyNoteBodyBackground(color: color)
 
                         ScrollView {
-                            LazyVStack(alignment: .leading, spacing: 0) {
+                            LazyVStack(alignment: .leading, spacing: 1) {
                                 ForEach(todoItems) { item in
                                     TaskRowView(
                                         item: item,
@@ -68,8 +68,8 @@ struct StickyNoteView: View {
                                     )
                                 }
                             }
-                            .padding(.top, 8)
-                            .padding(.bottom, 12)
+                            .padding(.top, 6)
+                            .padding(.bottom, 10)
                             .frame(maxWidth: .infinity, alignment: .topLeading)
                         }
                         .scrollIndicators(.hidden)

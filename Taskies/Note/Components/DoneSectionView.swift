@@ -14,30 +14,37 @@ struct DoneSectionView: View {
 
     var body: some View {
         VStack(spacing: 0) {
+            Rectangle()
+                .fill(textColor.opacity(0.08))
+                .frame(height: 1)
+                .padding(.horizontal, StickyMetrics.rowHPadding)
+                .padding(.top, 7)
+
             HStack(spacing: 0) {
                 Button {
                     withAnimation(.easeInOut(duration: 0.16)) {
                         isExpanded.toggle()
                     }
                 } label: {
-                    HStack(spacing: 5) {
+                    HStack(spacing: StickyMetrics.rowGlyphSpacing) {
                         DoneDisclosureMark(isExpanded: isExpanded)
                             .stroke(
                                 textColor.opacity(isHeaderHovered ? 0.58 : 0.42),
                                 style: StrokeStyle(lineWidth: 1.15, lineCap: .round, lineJoin: .round)
                             )
                             .frame(width: 7, height: 7)
-                            .frame(width: 12, height: 14)
+                            .frame(width: StickyMetrics.rowGlyphSize, height: 14)
 
-                        Text("Done")
-                            .font(.system(size: 10, weight: .medium))
-                            .foregroundStyle(textColor.opacity(isHeaderHovered || isExpanded ? 0.58 : 0.46))
+                        HStack(spacing: 5) {
+                            Text("Done")
+                                .font(.system(size: 10, weight: .medium))
+                                .foregroundStyle(textColor.opacity(isHeaderHovered || isExpanded ? 0.58 : 0.46))
 
-                        Text("\(items.count)")
-                            .font(.system(size: 9, weight: .regular))
-                            .monospacedDigit()
-                            .foregroundStyle(textColor.opacity(isHeaderHovered ? 0.42 : 0.32))
-                            .padding(.leading, 1)
+                            Text("\(items.count)")
+                                .font(.system(size: 9, weight: .regular))
+                                .monospacedDigit()
+                                .foregroundStyle(textColor.opacity(isHeaderHovered ? 0.42 : 0.32))
+                        }
 
                         Spacer(minLength: 4)
                     }
@@ -62,9 +69,9 @@ struct DoneSectionView: View {
                     .allowsHitTesting(isHeaderHovered)
                 }
             }
-            .padding(.leading, max(0, StickyMetrics.rowHPadding - 1))
+            .padding(.leading, StickyMetrics.rowHPadding)
             .padding(.trailing, max(0, StickyMetrics.rowHPadding - 3))
-            .padding(.top, 7)
+            .padding(.top, 3)
             .padding(.bottom, 2)
             .contentShape(Rectangle())
             .onHover { isHeaderHovered = $0 }

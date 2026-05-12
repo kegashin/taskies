@@ -105,7 +105,7 @@ struct PlainTaskTextField: NSViewRepresentable {
         field.placeholderAttributedString = NSAttributedString(
             string: placeholder,
             attributes: [
-                .foregroundColor: textColor.withAlphaComponent(0.0),
+                .foregroundColor: textColor.withAlphaComponent(placeholder.isEmpty ? 0.0 : 0.34),
                 .font: font
             ]
         )

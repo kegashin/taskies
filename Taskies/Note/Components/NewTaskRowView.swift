@@ -8,29 +8,43 @@ struct NewTaskRowView: View {
 
     @State private var isHovered = false
 
+    private var hasText: Bool {
+        !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
     var body: some View {
-        PlainTaskTextField(
-            text: $text,
-            placeholder: "",
-            textColor: textColor,
-            isStruckThrough: false,
-            onSubmit: submitIfNeeded
-        )
+        HStack(alignment: .center, spacing: StickyMetrics.rowGlyphSpacing) {
+            Image(systemName: "plus")
+                .font(.system(size: 9.5, weight: .semibold))
+                .foregroundStyle(textColor.opacity(isHovered || hasText ? 0.5 : 0.3))
+                .frame(width: StickyMetrics.rowGlyphSize, height: StickyMetrics.rowGlyphSize)
+
+            PlainTaskTextField(
+                text: $text,
+                placeholder: "New task",
+                textColor: textColor,
+                isStruckThrough: false,
+                onSubmit: submitIfNeeded
+            )
+            .frame(height: StickyMetrics.rowGlyphSize)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .frame(minHeight: StickyMetrics.rowMinHeight)
-            .padding(.horizontal, StickyMetrics.rowHPadding)
-            .padding(.vertical, 1.5)
-            .background {
-                Rectangle()
-                    .fill(textColor.opacity(isHovered && text.isEmpty ? 0.026 : 0))
-            }
-            .contentShape(Rectangle())
-            .onHover { isHovered = $0 }
-            .animation(.easeInOut(duration: 0.11), value: isHovered)
+        }
+        .padding(.horizontal, StickyMetrics.rowHPadding)
+        .padding(.vertical, StickyMetrics.rowVPadding)
+        .frame(minHeight: StickyMetrics.rowMinHeight)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 6, style: .continuous)
+                .fill(textColor.opacity(isHovered && !hasText ? 0.04 : 0))
+                .padding(.horizontal, StickyMetrics.rowHighlightInset)
+        )
+        .contentShape(Rectangle())
+        .onHover { isHovered = $0 }
+        .animation(.easeInOut(duration: 0.12), value: isHovered)
     }
 
     private func submitIfNeeded() {
-        guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+        guard hasText else { return }
         onSubmit()
     }
 }
